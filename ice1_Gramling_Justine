@@ -1,0 +1,82 @@
+#setting up directory
+import os
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#reading data
+fruit_data = pd.read_table('data/taxonomy.txt')
+
+#Observed Relationships: Plot Petals, Internode, and Sepal against Fruit.
+fruit_data.plot.scatter(x='Petals', y='Fruit')
+plt.show()
+
+fruit_data.plot.scatter(x='Internode', y='Fruit')
+plt.show()
+
+fruit_data.plot.scatter(x='Sepal', y='Fruit')
+plt.show()
+
+#Generate histograms for Petals, Internode, Sepal, and Fruit. 
+
+fruit_data['Petals'].plot.hist(alpha=0.5)
+plt.show()
+
+fruit_data['Internode'].plot.hist(alpha=0.5)
+plt.show()
+
+fruit_data['Sepal'].plot.hist(alpha=0.5)
+plt.show()
+
+fruit_data['Fruit'].plot.hist(alpha=0.5)
+plt.show()
+
+#The next graph you need to create is a boxplot of Bract against Fruit. 
+from scipy.stats import binned_statistic
+
+# Bin the values of Bract. Base the binning by mean, not count. 
+# Name each bin with a roman numeral: `BractI`, `BractII`, `BractIII`, etc. 
+fruit_data['Bract'].max()
+fruit_data['Bract'].min()
+
+bin_counts,bin_edges,binnum = binned_statistic(fruit_data['Bract'], 
+                                               fruit_data['Bract'], 
+                                               statistic='mean', 
+                                               bins=4)
+
+bin_counts
+bin_edges
+binnum
+
+bin_interval = [17.04, 17.78, 18.52, 19.26, 20]
+
+binlabels = ['BractI', 'BractII', 'BractIII', 'BractIIII']
+
+bract_categ = pd.cut(fruit_data['Bract'], bin_interval, right=False, retbins=False, labels=binlabels)
+
+
+# Name the new column of data `Bract_Cat`. 
+bract_categ.name = 'Bract_Cat'
+
+#Add the new column of data to the existing dataframe. 
+fruit_data = fruit_data.join(pd.DataFrame(bract_categ))
+
+
+# Generate a boxplot with Fruit and Bract_Cat. 
+fruit_data.boxplot(column='Fruit', by='Bract_Cat')
+plt.show()
+
+#Generate a bar chart for Taxon and Fruit. 
+# Select 4 rows of data, one with Taxon of `I`, one with `II`, one with `III`, and one with `IV`. 
+# Do the same with `Bract_Cat`, except select 4 rows of data. 
+fruit_d = {'Fruit': [7.876151371,7.883368163,7.8303941,7.139197713], 
+        'Taxon':['I','II','III','IV']}
+fruit_data = pd.DataFrame(data=fruit_d)
+fruit_data.plot.bar(x='Taxon', y='Fruit')
+plt.show()
+
+fruit_d = {'Fruit': [7.876151371,7.883368163,7.8303941,7.139197713], 
+        'Bract':['BractI', 'BractII', 'BractIII', 'BractIIII']}
+fruit_data = pd.DataFrame(data=fruit_d)
+fruit_data.plot.bar(x='Bract_cat', y='Fruit')
+plt.show()
+
